@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANDA-T analytical density profiles — θ = 180°</title>
+<style>
+:root {
+    color-scheme: light;
+    --border: #d7d7d7;
+    --muted: #666;
+    --bg-soft: #f6f6f6;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    background: white;
+    color: #111;
+}
+.wrapper {
+    max-width: 1050px;
+    margin: 0 auto;
+}
+h1 {
+    margin: 0 0 18px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: 600;
+}
+.layout {
+    display: grid;
+    grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+.controls {
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 8px;
+}
+.control {
+    margin-bottom: 17px;
+}
+.control:last-child { margin-bottom: 0; }
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+.value {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+select, input[type="number"] {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background: white;
+    font-size: 15px;
+}
+input[type="range"] {
+    --track-bg: #e4e7eb;
+    --thumb-color: #2f6fb0;
+    width: 100%;
+    height: 18px;
+    margin: 1px 0 0;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--track-bg);
+    border: 1px solid #c7cbd0;
+}
+input[type="range"]::-moz-range-track {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--track-bg);
+    border: 1px solid #c7cbd0;
+}
+input[type="range"]::-webkit-slider-thumb {
+    width: 17px;
+    height: 17px;
+    margin-top: -6px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #777;
+    background: var(--thumb-color);
+    -webkit-appearance: none;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #777;
+    background: var(--thumb-color);
+}
+.range-note {
+    margin-top: 4px;
+    min-height: 15px;
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+.range-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: -5px 0 16px;
+    font-size: 11px;
+    color: var(--muted);
+}
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.legend-swatch {
+    width: 18px;
+    height: 7px;
+    border-radius: 999px;
+    border: 1px solid #c7cbd0;
+}
+.legend-valid { background: #82acd9; }
+.legend-invalid { background: #e4e7eb; }
+.row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+.chart-panel {
+    min-width: 0;
+}
+#chart {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    background: white;
+}
+.status {
+    margin-top: 10px;
+    min-height: 22px;
+    font-size: 13px;
+    color: var(--muted);
+}
+.status.bad {
+    color: #a22222;
+    font-weight: 600;
+}
+.params {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+button {
+    min-height: 38px;
+    padding: 7px 12px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background: var(--bg-soft);
+    cursor: pointer;
+    font-size: 14px;
+}
+button:hover { background: #ececec; }
+@media (max-width: 760px) {
+    body { padding: 14px; }
+    .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+    <h1>PANDA-T: analytical density profiles (θ = 180°)</h1>
+
+    <div class="layout">
+        <section class="controls">
+            <div class="control">
+                <div class="label-row"><label for="shape">Morphology</label></div>
+                <select id="shape">
+                    <option value="droplet_1">Wall droplet (droplet_w1)</option>
+                    <option value="layerx">Free filament (filament_w0)</option>
+                    <option value="rollx_3">Three-wall filament (filament_w3)</option>
+                    <option value="wormx_3">Three-wall capsule (capsule_w3)</option>
+                </select>
+            </div>
+
+            <div class="control">
+                <div class="label-row">
+                    <span>Contact angle</span>
+                    <span class="value">θ = 180°</span>
+                </div>
+            </div>
+
+            <div class="range-legend" aria-label="Existence-region legend">
+                <span class="legend-item"><span class="legend-swatch legend-valid"></span>exists</span>
+                <span class="legend-item"><span class="legend-swatch legend-invalid"></span>does not exist</span>
+            </div>
+
+            <div class="control">
+                <div class="label-row">
+                    <label for="phi">φ</label>
+                    <span id="phiValue" class="value"></span>
+                </div>
+                <input id="phi" type="range" min="0.001" max="0.999" step="0.001" value="0.250">
+                <div id="phiExistence" class="range-note"></div>
+            </div>
+
+            <div class="control">
+                <div class="label-row">
+                    <label for="delta">δ</label>
+                    <span id="deltaValue" class="value"></span>
+                </div>
+                <input id="delta" type="range" min="0" max="0.25" step="0.001" value="0">
+                <div id="deltaExistence" class="range-note"></div>
+            </div>
+
+            <div class="control">
+                <div class="label-row">
+                    <label for="l">l</label>
+                    <span id="lValue" class="value"></span>
+                </div>
+                <input id="l" type="range" min="0.10" max="5.00" step="0.01" value="1.00">
+                <div id="lExistence" class="range-note"></div>
+            </div>
+
+            <div class="control">
+                <div class="label-row"><label for="ly">l<sub>y</sub></label></div>
+                <input id="ly" type="number" min="0.05" step="0.05" value="2.0">
+            </div>
+
+            <div class="control checkbox-row">
+                <input id="center" type="checkbox" checked>
+                <label for="center">Center by density profile</label>
+            </div>
+
+            <div class="control">
+                <button id="reset" type="button">Reset</button>
+            </div>
+        </section>
+
+        <section class="chart-panel">
+            <svg id="chart" viewBox="0 0 760 500" role="img" aria-label="Analytical density profile"></svg>
+            <div id="status" class="status"></div>
+            <div id="params" class="params"></div>
+        </section>
+    </div>
+</div>
+
+<script>
+(() => {
+    const PI = Math.PI;
+    const SQRT3 = Math.sqrt(3);
+
+    const root = document;
+    const shapeEl = root.getElementById("shape");
+    const phiEl = root.getElementById("phi");
+    const deltaEl = root.getElementById("delta");
+    const lEl = root.getElementById("l");
+    const lyEl = root.getElementById("ly");
+    const centerEl = root.getElementById("center");
+    const statusEl = root.getElementById("status");
+    const paramsEl = root.getElementById("params");
+    const svg = root.getElementById("chart");
+
+    const phiValue = root.getElementById("phiValue");
+    const deltaValue = root.getElementById("deltaValue");
+    const lValue = root.getElementById("lValue");
+    const lExistence = root.getElementById("lExistence");
+    const phiExistence = root.getElementById("phiExistence");
+    const deltaExistence = root.getElementById("deltaExistence");
+
+    const morphologyIds = {
+        droplet_1: "droplet_w1",
+        layerx: "filament_w0",
+        rollx_3: "filament_w3",
+        wormx_3: "capsule_w3"
+    };
+
+    const defaults = {
+        shape: "droplet_1",
+        phi: 0.25,
+        delta: 0,
+        l: 1,
+        ly: 2,
+        center: true
+    };
+
+    function aEff(delta) {
+        return 1 - 2 * SQRT3 * delta;
+    }
+
+    function hEff(delta) {
+        return 0.5 * SQRT3 * aEff(delta);
+    }
+
+    function zBottom(delta) {
+        return -hEff(delta) / 3;
+    }
+
+    function clamp(x, a, b) {
+        return Math.max(a, Math.min(b, x));
+    }
+
+    function isFinitePositive(x) {
+        return Number.isFinite(x) && x > 0;
+    }
+
+    function condLayerx(l, phi, th, delta) {
+        const ap = aEff(delta);
+        if (ap <= 0) return false;
+        const phiMax = PI * ap * ap / (3 * SQRT3);
+        return phi > 0 && phi <= phiMax;
+    }
+
+    function condDroplet1(l, phi, th, delta) {
+        const ap = aEff(delta);
+        if (ap <= 0 || th < PI / 2) return false;
+
+        const volFactor = PI / 3 * (2 - 3 * Math.cos(th) + Math.pow(Math.cos(th), 3));
+        if (volFactor <= 0) return false;
+
+        const V = phi * (SQRT3 / 4) * l;
+        const R = Math.cbrt(V / volFactor);
+
+        const condLength = 2 * R <= l;
+        const condBase = 2 * R * Math.sin(th) <= ap;
+
+        const h = R * (1 - Math.cos(th));
+        const A = 4 / 3;
+        const B = ap / SQRT3 - 2 * R * Math.cos(th);
+        const C = -0.25 * ap * ap + Math.pow(R * Math.sin(th), 2);
+
+        const f0 = C;
+        const fh = -A * h * h + B * h + C;
+        const zv = B / (2 * A);
+        const fv = -A * zv * zv + B * zv + C;
+
+        let fmax = Math.max(f0, fh);
+        if (zv >= 0 && zv <= h) fmax = Math.max(fmax, fv);
+
+        return condLength && condBase && fmax < 0 && phi > 0 && phi < 1;
+    }
+
+    function wormRadius(l, phi, th, delta) {
+        const thp = PI - th;
+        const ap = aEff(delta);
+        const denom =
+            thp - PI / 3
+            - Math.sin(2 * thp - PI / 3)
+            + SQRT3 / 2;
+        const numerator = (ap * ap - phi) * SQRT3 / 12;
+        if (denom <= 0 || numerator < 0) return NaN;
+        return Math.sqrt(numerator / denom);
+    }
+
+    function condWormx3(l, phi, th, delta) {
+        const ap = aEff(delta);
+        if (ap <= 0 || th <= 2 * PI / 3) return false;
+
+        const r = wormRadius(l, phi, th, delta);
+        if (!isFinitePositive(r)) return false;
+
+        const thp = PI - th;
+        const x = 2 * r * Math.sin(PI / 3 - thp);
+        return phi > 0 && phi < ap * ap && x <= ap / 2;
+    }
+
+    function rollRadius(l, phi, th, delta) {
+        const ap = aEff(delta);
+        return -ap / (2 * SQRT3 * Math.cos(th));
+    }
+
+    function condRollx3(l, phi, th, delta) {
+        const ap = aEff(delta);
+        if (ap <= 0 || th <= 2 * PI / 3 || th > PI) return false;
+
+        const c = Math.cos(th);
+        const s = Math.sin(th);
+        const r = -ap / (2 * SQRT3 * c);
+        if (!isFinitePositive(r)) return false;
+
+        const Vends =
+            PI * (2 + 9 * c - 3 * c * c * c)
+            / (72 * SQRT3 * c * c * c);
+        const VendsScaled = Vends * Math.pow(ap, 3);
+
+        const Across =
+            (3 * th - 2 * PI - 3 * s * c)
+            / (12 * c * c);
+        const AcrossScaled = Across * ap * ap;
+
+        if (!(AcrossScaled > 0)) return false;
+
+        const Lins =
+            ((SQRT3 / 4) * phi * l - VendsScaled)
+            / AcrossScaled;
+
+        return Lins >= 0 && Lins + 2 * r <= l && phi > 0;
+    }
+
+    function validShape(shape, l, phi, th, delta) {
+        if (shape === "layerx") return condLayerx(l, phi, th, delta);
+        if (shape === "droplet_1") return condDroplet1(l, phi, th, delta);
+        if (shape === "wormx_3") return condWormx3(l, phi, th, delta);
+        if (shape === "rollx_3") return condRollx3(l, phi, th, delta);
+        return false;
+    }
+
+
+    function scanRange(el, isValidAt) {
+        const min = Number(el.min);
+        const max = Number(el.max);
+        const step = Number(el.step) || (max - min) / 500;
+        const n = Math.max(1, Math.round((max - min) / step));
+        const states = [];
+
+        for (let i = 0; i <= n; i++) {
+            const value = i === n ? max : min + i * step;
+            states.push({ value, valid: Boolean(isValidAt(value)) });
+        }
+
+        const intervals = [];
+        let start = null;
+        for (let i = 0; i < states.length; i++) {
+            const s = states[i];
+            if (s.valid && start === null) start = s.value;
+            const isLast = i === states.length - 1;
+            if (start !== null && (!s.valid || isLast)) {
+                const endIndex = s.valid && isLast ? i : i - 1;
+                intervals.push([start, states[Math.max(0, endIndex)].value]);
+                start = null;
+            }
+        }
+        return { min, max, intervals };
+    }
+
+    function intervalsToGradient(rangeInfo) {
+        const { min, max, intervals } = rangeInfo;
+        const invalid = "#e4e7eb";
+        const valid = "#82acd9";
+        const span = max - min;
+        if (!(span > 0) || intervals.length === 0) return invalid;
+
+        const stops = [];
+        let cursor = 0;
+        const pct = v => clamp((v - min) / span * 100, 0, 100);
+
+        for (const [a, b] of intervals) {
+            const pa = pct(a);
+            const pb = pct(b);
+            if (pa > cursor) {
+                stops.push(`${invalid} ${cursor.toFixed(3)}%`, `${invalid} ${pa.toFixed(3)}%`);
+            }
+            stops.push(`${valid} ${pa.toFixed(3)}%`, `${valid} ${pb.toFixed(3)}%`);
+            cursor = pb;
+        }
+        if (cursor < 100) {
+            stops.push(`${invalid} ${cursor.toFixed(3)}%`, `${invalid} 100%`);
+        }
+        return `linear-gradient(to right, ${stops.join(", ")})`;
+    }
+
+    function formatIntervals(rangeInfo, decimals = 3) {
+        const { min, max, intervals } = rangeInfo;
+        if (intervals.length === 0) return "No existence region for the current parameters.";
+        if (
+            intervals.length === 1 &&
+            Math.abs(intervals[0][0] - min) < 1e-9 &&
+            Math.abs(intervals[0][1] - max) < 1e-9
+        ) {
+            return "Existence region: full slider range.";
+        }
+        const pieces = intervals.map(([a, b]) => `${a.toFixed(decimals)}–${b.toFixed(decimals)}`);
+        return `Existence region: ${pieces.join(", ")}`;
+    }
+
+    function updateExistenceRanges(shape, l, phi, th, delta) {
+        const phiRange = scanRange(phiEl, testPhi => validShape(shape, l, testPhi, th, delta));
+        const deltaRange = scanRange(deltaEl, testDelta => validShape(shape, l, phi, th, testDelta));
+        const lRange = scanRange(lEl, testL => validShape(shape, testL, phi, th, delta));
+
+        phiEl.style.setProperty("--track-bg", intervalsToGradient(phiRange));
+        deltaEl.style.setProperty("--track-bg", intervalsToGradient(deltaRange));
+        lEl.style.setProperty("--track-bg", intervalsToGradient(lRange));
+
+        phiExistence.textContent = formatIntervals(phiRange, 3);
+        deltaExistence.textContent = formatIntervals(deltaRange, 3);
+        lExistence.textContent = formatIntervals(lRange, 2);
+
+        const currentValid = validShape(shape, l, phi, th, delta);
+        const thumbColor = currentValid ? "#2f6fb0" : "#b23a3a";
+        phiEl.style.setProperty("--thumb-color", thumbColor);
+        deltaEl.style.setProperty("--thumb-color", thumbColor);
+        lEl.style.setProperty("--thumb-color", thumbColor);
+    }
+
+    function rhoLayerx(z, l, ly, phi, th, delta) {
+        const r = Math.sqrt(phi * SQRT3 / (4 * PI));
+        if (Math.abs(z) > r) return 0;
+        const y = Math.sqrt(Math.max(0, r * r - z * z));
+        return 2 * y / ly;
+    }
+
+    function rhoDroplet1(z, l, ly, phi, th, delta) {
+        const vf = 2 - 3 * Math.cos(th) + Math.pow(Math.cos(th), 3);
+        if (!(vf > 0)) return NaN;
+
+        const R = Math.cbrt(
+            3 * SQRT3 * phi * l
+            / (4 * PI * vf)
+        );
+
+        const zb = zBottom(delta);
+        const zc = zb - R * Math.cos(th);
+        const zu = zc + R;
+
+        if (z < zb || z > zu) return 0;
+        const rsq = Math.max(0, R * R - Math.pow(z - zc, 2));
+        return PI * rsq / (l * ly);
+    }
+
+    function rhoWormx3(z, l, ly, phi, th, delta) {
+        const thp = PI - th;
+        const ap = aEff(delta);
+        const H = hEff(delta);
+        const r = wormRadius(l, phi, th, delta);
+        if (!Number.isFinite(r)) return NaN;
+
+        const zb = -H / 3;
+        const zt = 2 * H / 3;
+
+        const zcLow = zb + r * Math.cos(thp);
+        const zcUp = zt - 2 * r * Math.cos(thp);
+
+        const L1 = 2 * r * Math.sin(PI / 3 - thp);
+        const L2 = ap - 2 * SQRT3 * r * Math.cos(thp);
+
+        const z1 = zb;
+        const z2 = zb + L1 * SQRT3 / 2;
+        const z3 = zt - L1 * SQRT3 / 2;
+        const z4 = zcUp + r;
+
+        if (z >= z1 && z <= z2) {
+            return (
+                L2
+                + 2 * Math.sqrt(Math.max(0, r * r - Math.pow(z - zcLow, 2)))
+            ) / ly;
+        }
+
+        if (z > z2 && z <= z3) {
+            return (
+                ap - 2 / SQRT3 * (z - zb)
+            ) / ly;
+        }
+
+        if (z > z3 && z <= z4) {
+            return (
+                2 * Math.sqrt(Math.max(0, r * r - Math.pow(z - zcUp, 2)))
+                / ly
+            );
+        }
+
+        return 0;
+    }
+
+    function dRollx3(l, phi, th, delta) {
+        const ap = aEff(delta);
+        const r = rollRadius(l, phi, th, delta);
+
+        const numerator =
+            phi * l * SQRT3 / 4
+            - PI * SQRT3 / 2 * r * r * ap
+            + 2 * PI * Math.pow(r, 3) / 3
+            + PI * SQRT3 / 72 * Math.pow(ap, 3);
+
+        const arg = clamp(
+            ap / (2 * SQRT3 * r),
+            -1,
+            1
+        );
+
+        const root = Math.sqrt(
+            Math.max(0, r * r - ap * ap / 12)
+        );
+
+        const denominator =
+            r * r * (PI - 3 * Math.acos(arg))
+            + SQRT3 / 2 * ap * root;
+
+        return numerator / denominator;
+    }
+
+    function rhoRollx3(z, l, ly, phi, th, delta) {
+        const ap = aEff(delta);
+        const H = hEff(delta);
+        const r = rollRadius(l, phi, th, delta);
+        const d = dRollx3(l, phi, th, delta);
+
+        if (!Number.isFinite(r) || !Number.isFinite(d)) return NaN;
+
+        const zc = 0;
+        const zb = -H / 3;
+        const zt = 2 * H / 3;
+        const zcap = zc + r;
+
+        if (z < zb || z > zcap) return 0;
+
+        const rz = Math.sqrt(
+            Math.max(0, r * r - Math.pow(z - zc, 2))
+        );
+
+        const h = (zt - z) / SQRT3;
+
+        let S;
+        if (rz <= h) {
+            S = 2 * d * rz + PI * rz * rz;
+        } else {
+            const ratio = rz > 0 ? clamp(h / rz, -1, 1) : 1;
+            const segment =
+                rz * rz * Math.acos(ratio)
+                - h * Math.sqrt(Math.max(0, rz * rz - h * h));
+
+            S =
+                2 * d * h
+                + PI * rz * rz
+                - 2 * segment;
+        }
+
+        return S / (l * ly);
+    }
+
+    function rhoAt(shape, z, l, ly, phi, th, delta) {
+        if (shape === "layerx") return rhoLayerx(z, l, ly, phi, th, delta);
+        if (shape === "droplet_1") return rhoDroplet1(z, l, ly, phi, th, delta);
+        if (shape === "wormx_3") return rhoWormx3(z, l, ly, phi, th, delta);
+        if (shape === "rollx_3") return rhoRollx3(z, l, ly, phi, th, delta);
+        return NaN;
+    }
+
+    function makeProfile(shape, l, ly, phi, th, delta, center) {
+        const N = 1600;
+        const zMin = -0.85;
+        const zMax = 0.85;
+
+        const pts = [];
+        for (let i = 0; i < N; i++) {
+            const z = zMin + (zMax - zMin) * i / (N - 1);
+            const rho = rhoAt(shape, z, l, ly, phi, th, delta);
+            pts.push({z, rho});
+        }
+
+        if (center) {
+            let area = 0;
+            let moment = 0;
+            for (let i = 1; i < pts.length; i++) {
+                const p0 = pts[i - 1];
+                const p1 = pts[i];
+                if (!Number.isFinite(p0.rho) || !Number.isFinite(p1.rho)) continue;
+                const dz = p1.z - p0.z;
+                area += 0.5 * (p0.rho + p1.rho) * dz;
+                moment += 0.5 * (p0.z * p0.rho + p1.z * p1.rho) * dz;
+            }
+
+            if (area > 0 && Number.isFinite(moment)) {
+                const zCom = moment / area;
+                for (const p of pts) p.z -= zCom;
+            }
+        }
+
+        return pts;
+    }
+
+    function svgEl(name, attrs = {}) {
+        const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        return el;
+    }
+
+    function draw(profile, valid) {
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        const W = 760;
+        const H = 500;
+        const m = {left: 78, right: 24, top: 28, bottom: 68};
+        const iw = W - m.left - m.right;
+        const ih = H - m.top - m.bottom;
+
+        let xMin = -0.75;
+        let xMax = 0.75;
+
+        const finite = profile.filter(p => Number.isFinite(p.rho) && Number.isFinite(p.z));
+        let dataYMax = finite.length ? Math.max(...finite.map(p => p.rho)) : 0;
+        if (!Number.isFinite(dataYMax) || dataYMax < 0) dataYMax = 0;
+
+        // Two fixed plotting ranges give directly comparable profiles:
+        // low-density profiles: 0 ... 0.51; high-density profiles: 0 ... 1.10.
+        const yMax = dataYMax <= 0.5 ? 0.51 : 1.10;
+        const yStep = yMax === 0.51 ? 0.10 : 0.20;
+        const yTickMax = yMax === 0.51 ? 0.50 : 1.00;
+        const yDecimals = 1;
+
+        const x = v => m.left + (v - xMin) / (xMax - xMin) * iw;
+        const y = v => m.top + ih - v / yMax * ih;
+
+        const bg = svgEl("rect", {x: 0, y: 0, width: W, height: H, fill: "white"});
+        svg.appendChild(bg);
+
+        const axisColor = "#111";
+        svg.appendChild(svgEl("line", {
+            x1: m.left, y1: m.top + ih, x2: m.left + iw, y2: m.top + ih,
+            stroke: axisColor, "stroke-width": 1.1
+        }));
+        svg.appendChild(svgEl("line", {
+            x1: m.left, y1: m.top, x2: m.left, y2: m.top + ih,
+            stroke: axisColor, "stroke-width": 1.1
+        }));
+
+        const xTicks = [-0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75];
+        for (const t of xTicks) {
+            const xx = x(t);
+            svg.appendChild(svgEl("line", {
+                x1: xx, y1: m.top + ih, x2: xx, y2: m.top + ih + 6,
+                stroke: axisColor
+            }));
+            const tx = svgEl("text", {
+                x: xx, y: m.top + ih + 24,
+                "text-anchor": "middle",
+                "font-size": 14,
+                "font-family": "Georgia, Times New Roman, serif"
+            });
+            tx.textContent = t.toFixed(t === 0 ? 0 : 2).replace(/0$/, "");
+            svg.appendChild(tx);
+        }
+
+        for (let val = 0; val <= yTickMax + yStep * 0.25; val += yStep) {
+            const yy = y(val);
+
+            svg.appendChild(svgEl("line", {
+                x1: m.left - 6, y1: yy, x2: m.left, y2: yy,
+                stroke: axisColor
+            }));
+
+            const ty = svgEl("text", {
+                x: m.left - 10, y: yy + 5,
+                "text-anchor": "end",
+                "font-size": 14,
+                "font-family": "Georgia, Times New Roman, serif"
+            });
+            ty.textContent = val.toFixed(yDecimals);
+            svg.appendChild(ty);
+        }
+
+        const xLabel = svgEl("text", {
+            x: m.left + iw / 2, y: H - 18,
+            "text-anchor": "middle",
+            "font-size": 18,
+            "font-family": "Georgia, Times New Roman, serif"
+        });
+        xLabel.textContent = "z / a";
+        svg.appendChild(xLabel);
+
+        const yLabel = svgEl("text", {
+            x: 20, y: m.top + ih / 2,
+            "text-anchor": "middle",
+            "font-size": 18,
+            "font-family": "Georgia, Times New Roman, serif",
+            transform: `rotate(-90 20 ${m.top + ih / 2})`
+        });
+        yLabel.textContent = "ρ / ρbulk";
+        svg.appendChild(yLabel);
+
+        if (finite.length > 1) {
+            let d = "";
+            let started = false;
+            for (const p of finite) {
+                if (p.z < xMin || p.z > xMax) continue;
+                const cmd = started ? "L" : "M";
+                d += `${cmd}${x(p.z).toFixed(2)},${y(Math.max(0, p.rho)).toFixed(2)} `;
+                started = true;
+            }
+            if (started) {
+                svg.appendChild(svgEl("path", {
+                    d,
+                    fill: "none",
+                    stroke: valid ? "#3B6FB6" : "#999",
+                    "stroke-width": 2.4,
+                    "stroke-linejoin": "round",
+                    "stroke-linecap": "round"
+                }));
+            }
+        }
+    }
+
+    function update() {
+        const shape = shapeEl.value;
+        const phi = Number(phiEl.value);
+        const thetaDeg = 180;
+        const delta = Number(deltaEl.value);
+        const l = Math.max(0.05, Number(lEl.value) || 1);
+        const ly = Math.max(0.05, Number(lyEl.value) || 2);
+        const center = centerEl.checked;
+        const th = PI;
+
+        phiValue.textContent = phi.toFixed(3);
+        deltaValue.textContent = delta.toFixed(3);
+        lValue.textContent = l.toFixed(2);
+
+        const valid = validShape(shape, l, phi, th, delta);
+        const profile = makeProfile(shape, l, ly, phi, th, delta, center);
+
+        updateExistenceRanges(shape, l, phi, th, delta);
+        draw(profile, valid);
+
+        statusEl.className = valid ? "status" : "status bad";
+        statusEl.textContent = valid
+            ? "The selected morphology exists for this parameter set."
+            : "The selected parameters are outside the existence region for this morphology.";
+
+        paramsEl.textContent =
+            `shape=${morphologyIds[shape]}; φ=${phi.toFixed(3)}; θ=${thetaDeg.toFixed(1)}°; ` +
+            `δ=${delta.toFixed(3)}; l=${l.toFixed(3)}; ly=${ly.toFixed(3)}; ` +
+            `a′=${aEff(delta).toFixed(3)}`;
+    }
+
+    [shapeEl, phiEl, deltaEl, lEl, lyEl, centerEl].forEach(el => {
+        el.addEventListener("input", update);
+        el.addEventListener("change", update);
+    });
+
+    root.getElementById("reset").addEventListener("click", () => {
+        shapeEl.value = defaults.shape;
+        phiEl.value = defaults.phi;
+        deltaEl.value = defaults.delta;
+        lEl.value = defaults.l;
+        lyEl.value = defaults.ly;
+        centerEl.checked = defaults.center;
+        update();
+    });
+
+    update();
+})();
+</script>
+</body>
+</html>
