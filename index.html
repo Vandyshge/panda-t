@@ -216,7 +216,7 @@ button:hover { background: #ececec; }
 
             <div class="control">
                 <div class="label-row">
-                    <label for="phi">φ</label>
+                    <label for="phi">Liquid volume fraction, φ</label>
                     <span id="phiValue" class="value"></span>
                 </div>
                 <input id="phi" type="range" min="0.001" max="0.999" step="0.001" value="0.250">
@@ -225,7 +225,7 @@ button:hover { background: #ececec; }
 
             <div class="control">
                 <div class="label-row">
-                    <label for="delta">δ</label>
+                    <label for="delta">Wetting-layer thickness, δ</label>
                     <span id="deltaValue" class="value"></span>
                 </div>
                 <input id="delta" type="range" min="0" max="0.25" step="0.001" value="0">
@@ -234,7 +234,7 @@ button:hover { background: #ececec; }
 
             <div class="control">
                 <div class="label-row">
-                    <label for="l">l</label>
+                    <label for="l">Pore length, l</label>
                     <span id="lValue" class="value"></span>
                 </div>
                 <input id="l" type="range" min="0.10" max="5.00" step="0.01" value="1.00">
@@ -242,8 +242,20 @@ button:hover { background: #ececec; }
             </div>
 
             <div class="control">
-                <div class="label-row"><label for="ly">l<sub>y</sub></label></div>
+                <div class="label-row"><label for="ly">MD cell length along the y-axis, l<sub>y</sub></label></div>
                 <input id="ly" type="number" min="0.05" step="0.05" value="2.0">
+            </div>
+
+
+            <div class="control">
+                <div style="font-size:13px; line-height:1.45; color:var(--muted);">
+                    <strong style="color:#111;">Length normalization.</strong>
+                    The pore side length <i>a</i> is used as the reference length.
+                    All length parameters are dimensionless:
+                    <i>l</i> = <i>L</i>/<i>a</i>,
+                    <i>l</i><sub>y</sub> = <i>L</i><sub>y</sub>/<i>a</i>,
+                    and δ = Δ/<i>a</i>.
+                </div>
             </div>
 
             <div class="control checkbox-row">
@@ -853,7 +865,7 @@ button:hover { background: #ececec; }
 
         paramsEl.textContent =
             `shape=${morphologyIds[shape]}; φ=${phi.toFixed(3)}; θ=${thetaDeg.toFixed(1)}°; ` +
-            `δ=${delta.toFixed(3)}; l=${l.toFixed(3)}; ly=${ly.toFixed(3)}; ` +
+            `δ=${delta.toFixed(3)}; l=L/a=${l.toFixed(3)}; ly=Ly/a=${ly.toFixed(3)}; ` +
             `a′=${aEff(delta).toFixed(3)}`;
     }
 
