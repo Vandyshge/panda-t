@@ -712,9 +712,20 @@ button:hover { background: #ececec; }
 
         // Two fixed plotting ranges give directly comparable profiles:
         // low-density profiles: 0 ... 0.51; high-density profiles: 0 ... 1.10.
-        const yMax = dataYMax <= 0.5 ? 0.51 : 1.10;
-        const yStep = yMax === 0.51 ? 0.10 : 0.20;
-        const yTickMax = yMax === 0.51 ? 0.50 : 1.00;
+        let yMax, yStep, yTickMax;
+        if (dataYMax <= 0.25) {
+            yMax = 0.25;
+            yStep = 0.05;
+            yTickMax = 0.25;
+        } else if (dataYMax <= 0.50) {
+            yMax = 0.51;
+            yStep = 0.10;
+            yTickMax = 0.50;
+        } else {
+            yMax = 1.10;
+            yStep = 0.20;
+            yTickMax = 1.00;
+        }
         const yDecimals = 1;
 
         const x = v => m.left + (v - xMin) / (xMax - xMin) * iw;
@@ -744,7 +755,7 @@ button:hover { background: #ececec; }
                 x: xx, y: m.top + ih + 24,
                 "text-anchor": "middle",
                 "font-size": 14,
-                "font-family": "Georgia, Times New Roman, serif"
+                "font-family": "Arial, Helvetica, sans-serif"
             });
             tx.textContent = t.toFixed(t === 0 ? 0 : 2).replace(/0$/, "");
             svg.appendChild(tx);
@@ -762,7 +773,7 @@ button:hover { background: #ececec; }
                 x: m.left - 10, y: yy + 5,
                 "text-anchor": "end",
                 "font-size": 14,
-                "font-family": "Georgia, Times New Roman, serif"
+                "font-family": "Arial, Helvetica, sans-serif"
             });
             ty.textContent = val.toFixed(yDecimals);
             svg.appendChild(ty);
@@ -772,7 +783,7 @@ button:hover { background: #ececec; }
             x: m.left + iw / 2, y: H - 18,
             "text-anchor": "middle",
             "font-size": 18,
-            "font-family": "Georgia, Times New Roman, serif"
+            "font-family": "Arial, Helvetica, sans-serif"
         });
         xLabel.textContent = "z / a";
         svg.appendChild(xLabel);
@@ -781,10 +792,16 @@ button:hover { background: #ececec; }
             x: 20, y: m.top + ih / 2,
             "text-anchor": "middle",
             "font-size": 18,
-            "font-family": "Georgia, Times New Roman, serif",
+            "font-family": "Arial, Helvetica, sans-serif",
             transform: `rotate(-90 20 ${m.top + ih / 2})`
         });
-        yLabel.textContent = "ρ / ρbulk";
+        yLabel.appendChild(document.createTextNode("ρ / ρ"));
+        const bulkSub = svgEl("tspan", {
+            "baseline-shift": "sub",
+            "font-size": "12"
+        });
+        bulkSub.textContent = "bulk";
+        yLabel.appendChild(bulkSub);
         svg.appendChild(yLabel);
 
         if (finite.length > 1) {
